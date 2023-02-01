@@ -135,6 +135,7 @@ if (pg=='Solicitações em Aberto'):
                 sheet.update_acell('R' + str(celula.row), texto)
             elif(status=='Não é possível atender'):
                 st.markdown(infor+'<b>Registro efetuado!</b></p>',unsafe_allow_html=True)
+                sheet.update_acell('R' + str(celula.row), texto)
                 sheet.update_acell('T'+str(celula.row),'VERDADEIRO')
         elif (botao==True and s!=a):
             st.markdown(alerta + '<b>Senha incorreta!</b></p>', unsafe_allow_html=True)
