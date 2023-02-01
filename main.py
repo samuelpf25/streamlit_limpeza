@@ -122,6 +122,7 @@ if (pg=='Solicitações em Aberto'):
         #data_agendamento.strftime('%d/%m/%Y')
         celula = sheet.find(n_solicitacao[n])
         status=st.radio('Selecione o status:',['-','Ciente','Não é possível atender'])
+        texto = st.text_area('Observação: ')
         s=st.text_input("Senha:",value="", type="password")
         botao=st.button('Registrar')
         if (botao==True and s==a):
@@ -131,6 +132,7 @@ if (pg=='Solicitações em Aberto'):
                 data_formatada = str(data.day) + '/' + str(data.month) + '/' + str(data.year)
                 sheet.update_acell('F' + str(celula.row), data_formatada)
                 sheet.update_acell('S'+str(celula.row),'VERDADEIRO')
+                sheet.update_acell('R' + str(celula.row), texto)
             elif(status=='Não é possível atender'):
                 st.markdown(infor+'<b>Registro efetuado!</b></p>',unsafe_allow_html=True)
                 sheet.update_acell('T'+str(celula.row),'VERDADEIRO')
