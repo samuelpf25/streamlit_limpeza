@@ -70,7 +70,7 @@ a=k
 pg=st.sidebar.radio('',['Solicitações em Aberto','Solicitações a Finalizar','Datas','Consulta'])
 if (pg=='Solicitações em Aberto'):
     for dic in dados:
-        if dic['Disponibilidade de Data'] != 'Não' and dic['Ciente'] == 'FALSO' and dic['Não é Possível Atender']=='FALSO' and dic['Prédio']!='' and dic['Tipo'] not in ['Limpeza de Geladeira/Freezer/Bebedouro','Limpeza de Geladeira/Freezer'] and dic['Status'] not in ['Ignorar','Cancelada']: #'Registro de Reclamação',
+        if dic['Status'] == '' and dic['Ciente'] == 'FALSO' and dic['Não é Possível Atender']=='FALSO' and dic['Prédio']!='' and dic['Tipo'] not in ['Limpeza de Geladeira/Freezer/Bebedouro','Limpeza de Geladeira/Freezer'] and dic['Status'] not in ['Ignorar','Cancelada']: #'Registro de Reclamação',
             print(dic['Nº da Solicitação'])
             n_solicitacao.append(dic['Nº da Solicitação'])
             tipo.append(dic['Tipo'])
