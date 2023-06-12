@@ -92,18 +92,25 @@ if (pg=='Solicitações em Aberto'):
     #print(nome[n_solicitacao.index(selecionado)])
     if (len(n_solicitacao)>0):
         n=n_solicitacao.index(selecionado)
-
+        itens = ''
+        cont=1
+        for link in links:
+            itens += '<a href='+link+'>Link '+cont+' </a>'
+            cont+=1
         #apresentar dados da solicitação
+
         st.markdown(titulo+'<b>Dados da Solicitação</b></p>',unsafe_allow_html=True)
         #st.text('<p style="font-family:Courier; color:Blue; font-size: 20px;">Nome: '+ nome[n]+'</p>',unsafe_allow_html=True)
         st.markdown(padrao + '<b>Tipo</b>: ' + str(tipo[n]) + '</p>', unsafe_allow_html=True)
+        if tipo[n]=='Registro de Reclamação':
+            st.markdown(alerta+'<b>Para reclamações, escrever retorno ao usuário na Observação</b></p>',unsafe_allow_html=True)
         st.markdown(padrao+'<b>Nome</b>: '+ str(nome[n])+'</p>',unsafe_allow_html=True)
         st.markdown(padrao+'<b>Telefone</b>: '+ str(telefone[n])+'</p>',unsafe_allow_html=True)
         st.markdown(padrao+'<b>Prédio</b>: '+ str(predio[n])+'</p>',unsafe_allow_html=True)
         st.markdown(padrao+'<b>Sala</b>: '+ str(sala[n])+'</p>',unsafe_allow_html=True)
         st.markdown(padrao+'<b>Data</b>: '+ str(data[n])+'</p>',unsafe_allow_html=True)
         st.markdown(padrao+'<b>Descrição</b>: '+ observacao[n]+'</p>',unsafe_allow_html=True)
-        st.markdown(padrao + '<b>Foto/Vídeo</b>: ' + links[n] + '</p>', unsafe_allow_html=True)
+        st.markdown(padrao + '<b>Foto/Vídeo</b>: ' + itens + '</p>', unsafe_allow_html=True)
 
         #status=st.selectbox('Selecione o Status',['Selecionar','Ciente','Não é possível atender'])
         #print(status)
@@ -129,9 +136,12 @@ if (pg=='Solicitações em Aberto'):
         celula = sheet.find(n_solicitacao[n])
         status=st.radio('Selecione o status:',['-','Ciente','Não é possível atender'])
         texto = st.text_area('Observação: ')
+        obr=True
+        if tipo[n] == 'Registro de Reclamação' and texto=='':
+            obr=False
         s=st.text_input("Senha:",value="", type="password")
         botao=st.button('Registrar')
-        if (botao==True and s==a):
+        if (botao==True and s==a and obr):
             if (status=='Ciente'):
                 st.markdown(infor+'<b>Registro efetuado!</b></p>',unsafe_allow_html=True)
                 data = data_agendamento
@@ -145,6 +155,8 @@ if (pg=='Solicitações em Aberto'):
                 sheet.update_acell('T'+str(celula.row),'VERDADEIRO')
         elif (botao==True and s!=a):
             st.markdown(alerta + '<b>Senha incorreta!</b></p>', unsafe_allow_html=True)
+        elif (botao==True and s==a and obr==False):
+            st.markdown(alerta + '<b>Por se tratar de uma reclamação, escrever observação/feedback para o usuário!</b></p>', unsafe_allow_html=True)
     else:
         st.markdown(infor + '<b>Não há itens na condição '+ pg +'</b></p>', unsafe_allow_html=True)
 elif pg=='Solicitações a Finalizar':
@@ -167,7 +179,11 @@ elif pg=='Solicitações a Finalizar':
     #print(nome[n_solicitacao.index(selecionado)])
     if (len(n_solicitacao) > 0):
         n = n_solicitacao.index(selecionado)
-
+        itens = ''
+        cont=1
+        for link in links:
+            itens += '<a href='+link+'>Link '+cont+' </a>'
+            cont+=1
         # apresentar dados da solicitação
         st.markdown(titulo + '<b>Dados da Solicitação</b></p>', unsafe_allow_html=True)
         # st.text('<p style="font-family:Courier; color:Blue; font-size: 20px;">Nome: '+ nome[n]+'</p>',unsafe_allow_html=True)
@@ -178,7 +194,7 @@ elif pg=='Solicitações a Finalizar':
         st.markdown(padrao + '<b>Sala</b>: ' + str(sala[n]) + '</p>', unsafe_allow_html=True)
         st.markdown(padrao + '<b>Data</b>: ' + str(data[n]) + '</p>', unsafe_allow_html=True)
         st.markdown(padrao + '<b>Descrição</b>: ' + observacao[n] + '</p>', unsafe_allow_html=True)
-        st.markdown(padrao + '<b>Foto/Vídeo</b>: ' + links[n] + '</p>', unsafe_allow_html=True)
+        st.markdown(padrao + '<b>Foto/Vídeo</b>: ' + itens + '</p>', unsafe_allow_html=True)
 
         # status=st.selectbox('Selecione o Status',['Selecionar','Ciente','Não é possível atender'])
         # print(status)
