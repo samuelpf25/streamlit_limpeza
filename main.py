@@ -1,3 +1,5 @@
+#Atualizado em 12/06/2023
+
 from datetime import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
@@ -56,6 +58,8 @@ sala=[]
 data=[]
 observacao=[]
 tipo=[]
+links = []
+
 
 #padroes
 padrao = '<p style="font-family:Courier; color:Blue; font-size: 15px;">'
@@ -80,6 +84,7 @@ if (pg=='Solicitações em Aberto'):
             sala.append(dic['Sala/Local'])
             data.append(dic['Data da Limpeza'])
             observacao.append(dic['Observações'])
+            links.append(dic['Foto / Vídeo (Opcional)'])
 
     st.markdown(cabecalho,unsafe_allow_html=True)
     st.subheader(pg)
@@ -98,12 +103,13 @@ if (pg=='Solicitações em Aberto'):
         st.markdown(padrao+'<b>Sala</b>: '+ str(sala[n])+'</p>',unsafe_allow_html=True)
         st.markdown(padrao+'<b>Data</b>: '+ str(data[n])+'</p>',unsafe_allow_html=True)
         st.markdown(padrao+'<b>Descrição</b>: '+ observacao[n]+'</p>',unsafe_allow_html=True)
+        st.markdown(padrao + '<b>Foto/Vídeo</b>: ' + links[n] + '</p>', unsafe_allow_html=True)
 
         #status=st.selectbox('Selecione o Status',['Selecionar','Ciente','Não é possível atender'])
         #print(status)
 
         #Data
-        d = '01/01/2021'
+        d = '01/01/2023'
         # print('Data Agendamento registrada: ' + d_agend[n])
         if (data[n] != ''):
             d = data[n]
@@ -115,7 +121,7 @@ if (pg=='Solicitações em Aberto'):
         data_ag = datetime.strptime(d, '%d-%m-%Y')
 
         if (data_ag == ''):
-            data_ag = datetime.strptime("01-01-2021", '%d-%m-%Y')
+            data_ag = datetime.strptime("01-01-2023", '%d-%m-%Y')
 
         data_agendamento = st.date_input('Data de Limpeza (ANO/MÊS/DIA)', value=data_ag)
         #st.markdown('<p id="datepicker--screenreader--message--input" placeholder="DD/MM/YYYY"></p>',unsafe_allow_html=True)
@@ -153,6 +159,7 @@ elif pg=='Solicitações a Finalizar':
             sala.append(dic['Sala/Local'])
             data.append(dic['Data da Limpeza'])
             observacao.append(dic['Observações'])
+            links.append(dic['Foto / Vídeo (Opcional)'])
 
     st.markdown(cabecalho,unsafe_allow_html=True)
     st.subheader(pg)
@@ -171,6 +178,7 @@ elif pg=='Solicitações a Finalizar':
         st.markdown(padrao + '<b>Sala</b>: ' + str(sala[n]) + '</p>', unsafe_allow_html=True)
         st.markdown(padrao + '<b>Data</b>: ' + str(data[n]) + '</p>', unsafe_allow_html=True)
         st.markdown(padrao + '<b>Descrição</b>: ' + observacao[n] + '</p>', unsafe_allow_html=True)
+        st.markdown(padrao + '<b>Foto/Vídeo</b>: ' + links[n] + '</p>', unsafe_allow_html=True)
 
         # status=st.selectbox('Selecione o Status',['Selecionar','Ciente','Não é possível atender'])
         # print(status)
@@ -203,6 +211,7 @@ elif pg=='Consulta':
             sala.append(dic['Sala/Local'])
             data.append(dic['Data da Limpeza'])
             observacao.append(dic['Observações'])
+
 
     st.markdown(cabecalho,unsafe_allow_html=True)
     st.subheader(pg)
