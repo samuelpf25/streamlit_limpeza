@@ -182,7 +182,7 @@ elif pg=='Solicitações a Finalizar':
         itens = ''
         cont=1
         for link in links:
-            itens += '<a href='+link+'>Link '+cont+' </a>'
+            itens += '<a href='+link+'>Link '+str(cont)+' </a>'
             cont+=1
         # apresentar dados da solicitação
         st.markdown(titulo + '<b>Dados da Solicitação</b></p>', unsafe_allow_html=True)
