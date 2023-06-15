@@ -95,8 +95,9 @@ if (pg=='Solicitações em Aberto'):
         itens = ''
         cont=1
         for link in links:
-            itens += '<p><a href='+link+'>Link '+str(cont)+' </a></p>'
-            cont+=1
+            if (link!=''):
+                itens += '<p><a href='+link+'>Link '+str(cont)+' </a></p>'
+                cont+=1
         #apresentar dados da solicitação
 
         st.markdown(titulo+'<b>Dados da Solicitação</b></p>',unsafe_allow_html=True)
