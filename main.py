@@ -95,7 +95,7 @@ if (pg=='Solicitações em Aberto'):
         itens = ''
         cont=1
         for link in links:
-            itens += '<a href='+link+'>Link '+cont+' </a>'
+            itens += '<a href='+link+'>Link '+str(cont)+' </a>'
             cont+=1
         #apresentar dados da solicitação
 
