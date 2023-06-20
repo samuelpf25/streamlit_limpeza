@@ -1,4 +1,4 @@
-#Atualizado em 12/06/2023
+#Atualizado em 20/06/2023
 
 from datetime import datetime
 import gspread
@@ -68,13 +68,30 @@ alerta = '<p style="font-family:Courier; color:Red; font-size: 15px;">'
 titulo = '<p style="font-family:Courier; color:Blue; font-size: 20px;">'
 cabecalho='<div id="logo" class="span8 small"><a title="Universidade Federal do Tocantins"><img src="https://ww2.uft.edu.br/images/template/brasao.png" alt="Universidade Federal do Tocantins"><span class="portal-title-1"></span><h1 class="portal-title corto">Universidade Federal do Tocantins</h1><span class="portal-description">COINFRA - LIMPEZA PREDIAL</span></a></div>'
 
+
+todos_status = ['', 'Procedente',
+'Pendente',
+'Cancelada',
+'Pendente Usuário',
+'Não Procedente',
+'Reclamação Respondida',
+'Observação',
+'Reclamação',
+'Ignorar']
+
 st.sidebar.title('Gestão Limpeza')
 a=k
 #pg=st.sidebar.selectbox('Selecione a Página',['Solicitações em Aberto','Solicitações a Finalizar','Consulta'])
 pg=st.sidebar.radio('',['Solicitações em Aberto','Solicitações a Finalizar','Datas','Consulta'])
+
 if (pg=='Solicitações em Aberto'):
+
+    st.markdown(cabecalho,unsafe_allow_html=True)
+    st.subheader(pg)
+    status_selecionar = st.selectbox('Filtrar por Status:', todos_status)
+
     for dic in dados:
-        if dic['Status'] == '' and dic['Ciente'] == 'FALSO' and dic['Não é Possível Atender']=='FALSO' and dic['Prédio']!='' and dic['Tipo'] not in ['Limpeza de Geladeira/Freezer/Bebedouro','Limpeza de Geladeira/Freezer'] and dic['Status'] not in ['Ignorar','Cancelada']: #'Registro de Reclamação',
+        if dic['Status'] == status_selecionar and dic['Ciente'] == 'FALSO' and dic['Não é Possível Atender']=='FALSO' and dic['Prédio']!='' and dic['Tipo'] not in ['Limpeza de Geladeira/Freezer/Bebedouro','Limpeza de Geladeira/Freezer']: #'Registro de Reclamação', and dic['Status'] not in ['Ignorar','Cancelada']
             print(dic['Nº da Solicitação'])
             n_solicitacao.append(dic['Nº da Solicitação'])
             tipo.append(dic['Tipo'])
@@ -86,8 +103,6 @@ if (pg=='Solicitações em Aberto'):
             observacao.append(dic['Observações'])
             links.append(dic['Foto / Vídeo (Opcional)'])
 
-    st.markdown(cabecalho,unsafe_allow_html=True)
-    st.subheader(pg)
     selecionado = st.selectbox('Nº da solicitação:',n_solicitacao)
     #print(nome[n_solicitacao.index(selecionado)])
     if (len(n_solicitacao)>0):
@@ -162,7 +177,7 @@ if (pg=='Solicitações em Aberto'):
         st.markdown(infor + '<b>Não há itens na condição '+ pg +'</b></p>', unsafe_allow_html=True)
 elif pg=='Solicitações a Finalizar':
     for dic in dados:
-        if dic['Ciente'] == 'VERDADEIRO' and dic['Não é Possível Atender']=='FALSO' and dic['Atendida']=='FALSO' and dic['Prédio']!='' and dic['Tipo'] not in ['Limpeza de Geladeira/Freezer/Bebedouro','Limpeza de Geladeira/Freezer'] and dic['Status'] not in ['Ignorar','Cancelada']: #'Registro de Reclamação',
+        if dic['Não é Possível Atender']=='FALSO' and dic['Atendida']=='FALSO' and dic['Prédio']!='' and dic['Tipo'] not in ['Limpeza de Geladeira/Freezer/Bebedouro','Limpeza de Geladeira/Freezer'] and dic['Status'] not in ['Ignorar','Cancelada']: #'Registro de Reclamação', dic['Ciente'] == 'VERDADEIRO' and
             print(dic['Nº da Solicitação'])
             n_solicitacao.append(dic['Nº da Solicitação'])
             tipo.append(dic['Tipo'])
