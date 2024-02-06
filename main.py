@@ -313,7 +313,7 @@ elif pg=='Relatório Fiscalização':
 
     status_opcoes = ['', 'Ciente', 'Manutenção']
     status_selecionado = st.selectbox('Status da observação:', status_opcoes, label_visibility='collapsed')
-    filtrar = dados['DATASOL'].isin(status_selecionado)
+    filtrar = dados['status'].isin(status_selecionado)
     dad = dados[filtrar]
 
     for dic in dad: #dados
