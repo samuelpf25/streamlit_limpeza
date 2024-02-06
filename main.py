@@ -4,6 +4,7 @@ from datetime import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 # import json
 #
@@ -313,25 +314,37 @@ elif pg=='Relatório Fiscalização':
 
     status_opcoes = ['', 'Ciente', 'Manutenção']
     status_selecionado = st.selectbox('Status da observação:', status_opcoes, label_visibility='collapsed')
-    filtrar = dados['status'].isin(status_selecionado)
-    dad = dados[filtrar]
+    print(status_selecionado)
+    #print(dados)
+    def filtro(x):
+        if x['status'] == status_selecionado:
+            return True
+        else:
+            return False
+
+    lista = dados
+    resultado = filter(filtro, lista)
+
+    #filtrar = dados['status'].isin([status_selecionado])
+    dad = resultado #dados[filtrar]
 
     for dic in dad: #dados
         if dic['Carimbo de data/hora'] != '':
             predio.append(dic['Bloco'])
             sala.append(dic['Sala/Local'])
-            fl_critica.append(dic['FALHAS DE NATUREZA CRÍTICA'])
+            fl_critica.append(dic['FALHAS DE NATUREZA CRÍTICA '])
             fl_grave.append(dic['FALHAS DE NATUREZA GRAVE'])
             fl_outros.append(dic['OUTRAS DESCONFORMIDADES'])
             op_critica.append(dic['FALHAS DE NATUREZA CRÍTICA_OP'])
-            op_grave.append(dic['FALHAS DE NATUREZA GRAVE_OP'])
-            op_outros.append(dic['OUTRAS DESCONFORMIDADES_OP'])
+            op_grave.append(dic['FALHAS DE NATUREZA GRAVE _OP'])
+            op_outros.append(dic['OUTRAS DESCONFORMIDADES _OP'])
             fotos.append(dic['Fotos'])
             data.append(dic['Data'])
             observacao.append(dic['Observações'])
-            status.append('status')
-            codigo.append('codigo')
+            status.append(dic['status'])
+            codigo.append(dic['codigo'])
 
+    st.markdown(alerta + '<b>'+str(len(predio))+' Registros Encontrados nesse Status</b></p>', unsafe_allow_html=True)
     selecionado = st.selectbox('Código de registro:', codigo)
 
     if len(predio)>0:
@@ -344,36 +357,49 @@ elif pg=='Relatório Fiscalização':
         st.markdown(padrao + '<b>Prédio</b>: ' + str(predio[n]) + '</p>', unsafe_allow_html=True)
         st.markdown(padrao + '<b>Sala/Local</b>: ' + str(sala[n]) + '</p>', unsafe_allow_html=True)
         st.markdown(subtitulo + '<b>Limpeza</b></p>', unsafe_allow_html=True)
-        st.markdown(padrao + '<b>Falhas de Natureza Crítica</b>: ' + str(fl_critica[n]) + '</p>', unsafe_allow_html=True)
-        st.markdown(padrao + '<b>Falhas de Natureza Grave</b>: ' + str(fl_grave[n]) + '</p>', unsafe_allow_html=True)
-        st.markdown(padrao + '<b>Outras Desconformidades</b>: ' + str(fl_outros[n]) + '</p>', unsafe_allow_html=True)
+        if (fl_critica[n]!=''):
+            st.markdown(padrao + '<b>Falhas de Natureza Crítica</b>: ' + str(fl_critica[n]) + '</p>', unsafe_allow_html=True)
+        if (fl_grave[n] != ''):
+            st.markdown(padrao + '<b>Falhas de Natureza Grave</b>: ' + str(fl_grave[n]) + '</p>', unsafe_allow_html=True)
+        if (fl_outros[n] != ''):
+            st.markdown(padrao + '<b>Outras Desconformidades</b>: ' + str(fl_outros[n]) + '</p>', unsafe_allow_html=True)
         st.markdown(subtitulo + '<b>Apoio Administrativo e Operacionais</b></p>', unsafe_allow_html=True)
-        st.markdown(padrao + '<b>Falhas de Natureza Crítica</b>: ' + str(op_critica[n]) + '</p>', unsafe_allow_html=True)
-        st.markdown(padrao + '<b>Falhas de Natureza Grave</b>: ' + str(op_grave[n]) + '</p>', unsafe_allow_html=True)
-        st.markdown(padrao + '<b>Outras Desconformidades</b>: ' + str(op_outros[n]) + '</p>', unsafe_allow_html=True)
+        if (op_critica[n] != ''):
+            st.markdown(padrao + '<b>Falhas de Natureza Crítica</b>: ' + str(op_critica[n]) + '</p>', unsafe_allow_html=True)
+        if (op_grave[n] != ''):
+            st.markdown(padrao + '<b>Falhas de Natureza Grave</b>: ' + str(op_grave[n]) + '</p>', unsafe_allow_html=True)
+        if (op_outros[n] != ''):
+            st.markdown(padrao + '<b>Outras Desconformidades</b>: ' + str(op_outros[n]) + '</p>', unsafe_allow_html=True)
         st.markdown(subtitulo + '<b>Fotos</b></p>', unsafe_allow_html=True)
         # fotos
         cont = 1
+        dir = ''
         for link in fotos[n].split(', '):
            link1 = link.split('id=')
            id = link1[1]
-           url = 'https://drive.google.com/uc?export=view&id=' + id
-           htm = '<img src="'+url+'" alt="Foto">'
-           st.markdown('htm<br>Foto ' + str(cont))
+           url ='https://drive.google.com/file/d/' + id + '/preview' #'https://drive.google.com/uc?export=view&id=' + id #
+           print(url)
+           dir+='<iframe src="'+url+'"></iframe><br>'
+
+           #components.iframe(url)
+           #st.image(url)
+           #htm = '<img src="'+url+'" alt="Foto" width="100" height="100"><br>'
+           #components.html(htm + '<br>Foto ' + str(cont))
            cont += 1
+        st.write(dir, unsafe_allow_html=True)
+        with st.form(key='my_form'):
+            stat = st.selectbox('Status',status_opcoes,index=status_opcoes.index(status_selecionado))
+            obs = st.text_area('Observação: ',value=observacao[n])
+            s = st.text_input("Senha:", value="", type="password")
+            botao = st.form_submit_button('Registrar')
+            if (botao == True and s == a):
+                celula = sheet.find(codigo[n])
+                sheet.update_acell('L' + str(celula.row), obs)
+                sheet.update_acell('M' + str(celula.row), stat)
 
-        stat = st.selectbox('Status',status_opcoes,index=status_opcoes.index(status_selecionado))
-        obs = st.text_area('Observação: ',value=observacao[n])
-        s = st.text_input("Senha:", value="", type="password")
-        botao = st.button('Registrar')
-        if (botao == True and s == a):
-            celula = sheet.find(codigo[n])
-            sheet.update_acell('L' + str(celula.row), obs)
-            sheet.update_acell('M' + str(celula.row), stat)
-
-            st.success('Registro efetuado!')
-        elif (botao == True and s != a):
-            st.error('Senha incorreta!')
+                st.success('Registro efetuado!')
+            elif (botao == True and s != a):
+                st.error('Senha incorreta!')
 
     # selecionado = st.selectbox('Nº da solicitação:', n_solicitacao)
     # # print(nome[n_solicitacao.index(selecionado)])
