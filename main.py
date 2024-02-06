@@ -313,7 +313,7 @@ elif pg=='Relatório Fiscalização':
     observacao = []
 
     status_opcoes = ['', 'Ciente', 'Manutenção']
-    status_selecionado = st.selectbox('Status da observação:', status_opcoes, label_visibility='collapsed')
+    status_selecionado = st.selectbox('Status da observação:', status_opcoes)
     print(status_selecionado)
     #print(dados)
     def filtro(x):
