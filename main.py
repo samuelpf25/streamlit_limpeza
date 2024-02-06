@@ -1,4 +1,4 @@
-#Atualizado em 20/06/2023
+#Atualizado em 06/02/2024
 
 from datetime import datetime
 import gspread
@@ -38,6 +38,17 @@ cliente = gspread.authorize(creds)
 sheet=cliente.open_by_key('1J4DAYirEo3fvxMva6iDXx9mpRH6e8HTBIX2CK3svJUQ').get_worksheet(0)
 dados = sheet.get_all_records()  # Get a list of all records
 df=pd.DataFrame(dados)
+
+def conexao(aba="Ciente Encarregadas",
+            chave='1J4DAYirEo3fvxMva6iDXx9mpRH6e8HTBIX2CK3svJUQ'):  # pasta="Transporte e Limpeza de Geladeira (respostas)",
+    """
+    carrega os dados da planilha do google sheets
+
+    """
+    sheet = cliente.open_by_key(chave).worksheet(aba)  # Open the spreadhseet
+    dados = sheet.get_all_records()
+    df = pd.DataFrame(dados)
+    return sheet, dados, df
 #print(df)
 #nomesServ = ['Aquiles Rhuan Bandeira Neres Pinheiro','Higor Eurípedes Pimentel Fernandes de Araújo','Ismael de Souza Martins Junior','Marcelo Paulino Galhardo','Mônica Regina Vieira Santos','Paulo Cesar de Castro Filho','Samuel de Paula Faria']
 #servid=easygui.choicebox("Servidor:","Escolha",nomesServ,0)
@@ -66,6 +77,7 @@ padrao = '<p style="font-family:Courier; color:Blue; font-size: 15px;">'
 infor = '<p style="font-family:Courier; color:Green; font-size: 15px;">'
 alerta = '<p style="font-family:Courier; color:Red; font-size: 15px;">'
 titulo = '<p style="font-family:Courier; color:Blue; font-size: 20px;">'
+subtitulo = '<p style="font-family:Courier; color:Blue; font-size: 17px;">'
 cabecalho='<div id="logo" class="span8 small"><a title="Universidade Federal do Tocantins"><img src="https://ww2.uft.edu.br/images/template/brasao.png" alt="Universidade Federal do Tocantins"><span class="portal-title-1"></span><h1 class="portal-title corto">Universidade Federal do Tocantins</h1><span class="portal-description">COINFRA - LIMPEZA PREDIAL</span></a></div>'
 
 
@@ -82,13 +94,14 @@ todos_status = ['', 'Procedente',
 st.sidebar.title('Gestão Limpeza')
 a=k
 #pg=st.sidebar.selectbox('Selecione a Página',['Solicitações em Aberto','Solicitações a Finalizar','Consulta'])
-pg=st.sidebar.radio('',['Solicitações em Aberto','Solicitações a Finalizar','Datas','Consulta'])
+pg=st.sidebar.radio('',['Solicitações em Aberto','Solicitações a Finalizar','Datas','Consulta','Relatório Fiscalização'])
 
 if (pg=='Solicitações em Aberto'):
 
     st.markdown(cabecalho,unsafe_allow_html=True)
     st.subheader(pg)
     status_selecionar = st.selectbox('Filtrar por Status:', todos_status)
+    sheet, dados, df = conexao()
 
     for dic in dados:
         if dic['Status'] == status_selecionar and dic['Ciente'] == 'FALSO' and dic['Não é Possível Atender']=='FALSO' and dic['Prédio']!='' and dic['Tipo'] not in ['Limpeza de Geladeira/Freezer/Bebedouro','Limpeza de Geladeira/Freezer']: #'Registro de Reclamação', and dic['Status'] not in ['Ignorar','Cancelada']
@@ -176,7 +189,10 @@ if (pg=='Solicitações em Aberto'):
     else:
         st.markdown(infor + '<b>Não há itens na condição '+ pg +'</b></p>', unsafe_allow_html=True)
 elif pg=='Solicitações a Finalizar':
+
+    sheet, dados, df = conexao()
     for dic in dados:
+        #print(dic['Nº da Solicitação'] + ' - ' + dic['Status'] + ' - ' + dic['Atendida']) #
         if dic['Não é Possível Atender']=='FALSO' and dic['Atendida']=='FALSO' and dic['Prédio']!='' and dic['Tipo'] not in ['Limpeza de Geladeira/Freezer/Bebedouro','Limpeza de Geladeira/Freezer'] and dic['Status'] not in ['Ignorar','Cancelada']: #'Registro de Reclamação', dic['Ciente'] == 'VERDADEIRO' and
             print(dic['Nº da Solicitação'])
             n_solicitacao.append(dic['Nº da Solicitação'])
@@ -233,6 +249,7 @@ elif pg=='Solicitações a Finalizar':
     else:
         st.markdown(infor + '<b>Não há itens na condição ' + pg + '</b></p>', unsafe_allow_html=True)
 elif pg=='Consulta':
+    sheet, dados, df = conexao()
     for dic in dados:
         if dic['Prédio']!='':
             print(dic['Nº da Solicitação'])
@@ -258,6 +275,7 @@ elif pg=='Consulta':
     else:
         st.dataframe(df[['Prédio', 'Sala/Local', 'Tipo', 'Data da Limpeza', 'Observações', 'Nome do Solicitante','Telefone', 'Nº da Solicitação', 'Ciente', 'Não é Possível Atender', 'Atendida']])
 elif pg=='Datas':
+    sheet, dados, df = conexao()
     for dic in dados:
         if dic['Ciente'] == 'VERDADEIRO' and dic['Não é Possível Atender'] == 'FALSO':
             print(dic['Nº da Solicitação'])
@@ -272,6 +290,91 @@ elif pg=='Datas':
 
     st.markdown(cabecalho, unsafe_allow_html=True)
     st.subheader(pg)
+
+elif pg=='Relatório Fiscalização':
+    sheet, dados, df = conexao(aba=pg)
+
+    st.markdown(cabecalho, unsafe_allow_html=True)
+    st.subheader(pg)
+
+    predio = []
+    sala = []
+    fl_critica = []
+    fl_grave = []
+    fl_outros = []
+    op_critica = []
+    op_grave = []
+    op_outros = []
+    fotos = []
+    data = []
+    status = []
+    codigo = []
+    observacao = []
+
+    status_opcoes = ['', 'Ciente', 'Manutenção']
+    status_selecionado = st.selectbox('Status da observação:', status_opcoes, label_visibility='collapsed')
+    filtrar = dados['DATASOL'].isin(status_selecionado)
+    dad = dados[filtrar]
+
+    for dic in dad: #dados
+        if dic['Carimbo de data/hora'] != '':
+            predio.append(dic['Bloco'])
+            sala.append(dic['Sala/Local'])
+            fl_critica.append(dic['FALHAS DE NATUREZA CRÍTICA'])
+            fl_grave.append(dic['FALHAS DE NATUREZA GRAVE'])
+            fl_outros.append(dic['OUTRAS DESCONFORMIDADES'])
+            op_critica.append(dic['FALHAS DE NATUREZA CRÍTICA_OP'])
+            op_grave.append(dic['FALHAS DE NATUREZA GRAVE_OP'])
+            op_outros.append(dic['OUTRAS DESCONFORMIDADES_OP'])
+            fotos.append(dic['Fotos'])
+            data.append(dic['Data'])
+            observacao.append(dic['Observações'])
+            status.append('status')
+            codigo.append('codigo')
+
+    selecionado = st.selectbox('Código de registro:', codigo)
+
+    if len(predio)>0:
+        n = codigo.index(selecionado)
+
+        # apresentar dados da solicitação
+        st.markdown(titulo + '<b>Dados do Registro de Fiscalização</b></p>', unsafe_allow_html=True)
+        # st.text('<p style="font-family:Courier; color:Blue; font-size: 20px;">Nome: '+ nome[n]+'</p>',unsafe_allow_html=True)
+        st.markdown(padrao + '<b>Data</b>: ' + str(data[n]) + '</p>', unsafe_allow_html=True)
+        st.markdown(padrao + '<b>Prédio</b>: ' + str(predio[n]) + '</p>', unsafe_allow_html=True)
+        st.markdown(padrao + '<b>Sala/Local</b>: ' + str(sala[n]) + '</p>', unsafe_allow_html=True)
+        st.markdown(subtitulo + '<b>Limpeza</b></p>', unsafe_allow_html=True)
+        st.markdown(padrao + '<b>Falhas de Natureza Crítica</b>: ' + str(fl_critica[n]) + '</p>', unsafe_allow_html=True)
+        st.markdown(padrao + '<b>Falhas de Natureza Grave</b>: ' + str(fl_grave[n]) + '</p>', unsafe_allow_html=True)
+        st.markdown(padrao + '<b>Outras Desconformidades</b>: ' + str(fl_outros[n]) + '</p>', unsafe_allow_html=True)
+        st.markdown(subtitulo + '<b>Apoio Administrativo e Operacionais</b></p>', unsafe_allow_html=True)
+        st.markdown(padrao + '<b>Falhas de Natureza Crítica</b>: ' + str(op_critica[n]) + '</p>', unsafe_allow_html=True)
+        st.markdown(padrao + '<b>Falhas de Natureza Grave</b>: ' + str(op_grave[n]) + '</p>', unsafe_allow_html=True)
+        st.markdown(padrao + '<b>Outras Desconformidades</b>: ' + str(op_outros[n]) + '</p>', unsafe_allow_html=True)
+        st.markdown(subtitulo + '<b>Fotos</b></p>', unsafe_allow_html=True)
+        # fotos
+        cont = 1
+        for link in fotos[n].split(', '):
+           link1 = link.split('id=')
+           id = link1[1]
+           url = 'https://drive.google.com/uc?export=view&id=' + id
+           htm = '<img src="'+url+'" alt="Foto">'
+           st.markdown('htm<br>Foto ' + str(cont))
+           cont += 1
+
+        stat = st.selectbox('Status',status_opcoes,index=status_opcoes.index(status_selecionado))
+        obs = st.text_area('Observação: ',value=observacao[n])
+        s = st.text_input("Senha:", value="", type="password")
+        botao = st.button('Registrar')
+        if (botao == True and s == a):
+            celula = sheet.find(codigo[n])
+            sheet.update_acell('L' + str(celula.row), obs)
+            sheet.update_acell('M' + str(celula.row), stat)
+
+            st.success('Registro efetuado!')
+        elif (botao == True and s != a):
+            st.error('Senha incorreta!')
+
     # selecionado = st.selectbox('Nº da solicitação:', n_solicitacao)
     # # print(nome[n_solicitacao.index(selecionado)])
     # if (len(n_solicitacao) > 0):
