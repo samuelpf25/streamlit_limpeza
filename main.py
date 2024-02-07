@@ -312,7 +312,7 @@ elif pg=='Relatório Fiscalização':
     codigo = []
     observacao = []
 
-    status_opcoes = ['', 'Ciente', 'Manutenção']
+    status_opcoes = ['', 'Ciente', 'Manutenção', 'Não pertence ao contrato']
     status_selecionado = st.selectbox('Status da observação:', status_opcoes)
     print(status_selecionado)
     #print(dados)
