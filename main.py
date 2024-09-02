@@ -6,32 +6,27 @@ from oauth2client.service_account import ServiceAccountCredentials
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
-# import json
-#
-# def escrever_json(dados):
-# 	with open('controle.json','w',encoding='utf8') as f:
-# 		json.dump(dados,f,ensure_ascii=False,sort_keys=True,indent=4,separators=(',',':'))
-#
-# variavel="-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC00DwYUXNE169X\nF+aR3cW6/NenD2ZYO5R6doc7ijOSOyv+yDTS01JKBynaAxM9JIP9KRQgMZgPxoWW\nltA7qFHqsO5X78exh5jtDXp71p/nmZTzWfDUVsY33ciKbgb8c4EmD8VY9SoOxzuf\nQLlWLFtmwM77dX7ZWeXGe9GmpO2eQ847YqVE4ClVIcDWco05n3vzTAKVeT1Rm6Kw\nZ2NSxp4aPjFM0Zc+Y2U0m30Og7HqWvwpLOcfpffZezXInFJdYW+/14MQ4Xvozfsn\nHlFe2XuSgrvkUD1QYpPmFxhdHKUy3go36iBlKgWos5t85x2X1kFnPHAHKanUhSO4\n7cJqG69zAgMBAAECggEAUgIqZ4s1wVEkJVfhS2JvZs58DzkEXdt0DhFJZ79YgagV\n3cK3drHDHnFeUZPYe4Be3wltJ+bmha0wdOslOhGvSceC6t6Fz6blPQtCdP2U3CoD\n7VXrTZun3rnYVbTutTy8JGO9ygm0UCycBbCI/yUyNYoYtuOFK5bDCUGqhq9CWOe6\nLyXKJY/SQF5rVNV+Il54VHzkc1ofgIF2hmNI9kxhfDg1FTmoZstFWHU9gg0Yxa6i\n+sLSrDTOtJq7uGlSVx74i+FKKNf5WbJM4zSTJySMfVisTpTTOMgcRoFkpEAYizBA\niBEtfHxdC7HJK63t111htY7Bi6uLk4XW7aI3PnJ2sQKBgQD15ZQmXcbJlwcK4WpF\n6ixhSX9npApVnVX3ergQd/8OXqdq9R1zsZHaEA1GDSCt/kH42nl9rCUtDAsk6JOU\ngGbfBMVLBDXP1V0vsZPL0chXGT4gykaTmJSdHYgNr0ArowMGWV3EDIw3uua5frbW\nifK1ngHKb1t7NQkpSBAnbHj/MQKBgQC8PhaWeM8GSKEgoOLbm97+nOv3yYf+jUVl\nsQZnuMdvI2ApKYEqRtu7FyqxvRJ2/8K6W1UoepL1+0yoTl8x/3gGgKv2mj/D89Gc\nUI9G5wNtEZgzd1orVp58zf79MfX6Xwd2Qb11rrht8EpvlNuXZr3GjskVIPqf2ZWd\nFAA9ySQX4wKBgArA2XO8Eh9qvWIabX1VOk+e2TV9FP6dfM7vzPDbbooAVa31vi37\nC/fPT+VKWa2COvxZAYsfZhjMOAiLKzkJTHZgTQh0zK2kFQkq6N229N3qOq9QaTm3\nKHiee/6tNU8zN8SlT9Zs/gzJ3aErC2/iZHzQxh9GM2f178qgXiR7N+dhAoGAepB2\nhoysRuwdNTBr5Q9NFzy3C0QFrwDukXK8t+YAvGUtJD/o4Mz4Ho3L96QilKacdFgp\nT0zXyR9RXziAFP7AeINo9AykvgJPlVaCo2igu3A8SC5K4HLqiFpbzyGrhdQ/+Ih/\nQlN7s+FDpfknLSHxKIopdP9fD5tNJdQzAAep338CgYBJ0sfhzjF6cJYa7/kq1Ds9\nYkn+zOjU1xCnMqEihDoNYvMwR27rG52k74uUHsIfx80nFZGv/rP4exvqt4xjLsNZ\n8qufgQipIDALPGFBkI/VBCv3tpDnxAppdDjN3vFKAYIU05EOTt79vLp98tJWOlkO\nmjwHRIDo2TvUi/eX0DlpSA==\n-----END PRIVATE KEY-----\n"
-# dicionario={
-#   "type": "service_account",
-#   "project_id": "manutencao747400",
-#   "private_key_id": "5706169c3e79c70baa4382deaa85c7ed868838e6",
-#   "private_key": variavel,
-#   "client_email": "sheets-coinfra@manutencao747400.iam.gserviceaccount.com",
-#   "client_id": "106481092352500366115",
-#   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-#   "token_uri": "https://oauth2.googleapis.com/token",
-#   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-#   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sheets-coinfra%40manutencao747400.iam.gserviceaccount.com"
-# }
+
 # escrever_json(dicionario)
 #https://pt.linkedin.com/pulse/manipulando-planilhas-do-google-usando-python-renan-pessoa
 #documentação -> https://gspread.readthedocs.io/en/latest/api.html#models
 #scope = ["https://spreadsheets.google.com/feeds",'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive"]
 scope = ['https://spreadsheets.google.com/feeds']
-k="456"
-creds = ServiceAccountCredentials.from_json_keyfile_name("controle.json", scope)
+k = st.secrets["senha"]
+json = {
+    "auth_provider_x509_cert_url":st.secrets["auth_provider_x509_cert_url"],
+    "auth_uri":st.secrets["auth_uri"],
+    "client_email":st.secrets["client_email"],
+    "client_id":st.secrets["client_id"],
+    "client_x509_cert_url":st.secrets["client_x509_cert_url"],
+    "private_key":st.secrets["private_key"],
+    "private_key_id":st.secrets["private_key_id"],
+    "project_id":st.secrets["project_id"],
+    "token_uri":st.secrets["token_uri"],
+    "type":st.secrets["type"]
+}
+
+creds = ServiceAccountCredentials.from_json_keyfile_dict(json, scope)
 
 cliente = gspread.authorize(creds)
 
